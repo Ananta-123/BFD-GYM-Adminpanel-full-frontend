@@ -115,7 +115,7 @@ export const sidebarData = [
       },
       {
         title: "Order",
-        path: "/carts",
+        path: "/orders",
         icon: ShoppingCart,
       },
       {
