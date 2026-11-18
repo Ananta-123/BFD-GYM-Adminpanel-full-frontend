@@ -5,10 +5,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 
+import { isSessionValid } from "../../Api/session.js";
+
 import { motion } from "framer-motion";
 
 import { loginAdmin } from "../../Api/authApi.js";
-import { logoutAdmin } from "../../Api/authApi.js";
+
 
 import logo from "../../Assets/logo.png"
 
@@ -33,68 +35,44 @@ const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // LOGIN HANDLER
- const handleLogin = async (e) => {
+ 
+const handleLogin = async (e) => {
   e.preventDefault();
 
-  try {
+  if (loading) return;
 
+  try {
     setLoading(true);
 
-    const data = await loginAdmin({
+    await loginAdmin({
       email,
       password,
     });
 
-    console.log(data);
-
-    if (data.accessToken) {
-
-      localStorage.setItem(
-        "token",
-        data.accessToken
-      );
-
-      localStorage.setItem(
-        "refreshToken",
-        data.refreshToken
-      );
-
-      // STORE USER
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
-
-      // OPTIONAL
-      localStorage.setItem(
-        "adminAuth",
-        "true"
-      );
-
-      navigate("/");
-    }
+    navigate("/", {
+      replace: true,
+    });
 
   } catch (error) {
+    const status = error.response?.status;
 
-    console.log(error);
-
-    alert(
-      error.response?.data?.message ||
-      "Login Failed"
-    );
-
+    if (status === 429) {
+      alert("Too many attempts. Please try again later.");
+    } else {
+      alert(
+        error.response?.data?.message ||
+        "Login failed. Please try again."
+      );
+    }
   } finally {
-
     setLoading(false);
-
   }
 };
 
-const token = localStorage.getItem("token");
 
-  if (token) {
-    return <Navigate to="/" replace />;
-  }
+if (isSessionValid()) {
+  return <Navigate to="/" replace />;
+}
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#050505] text-white">

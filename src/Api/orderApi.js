@@ -62,16 +62,15 @@ export const getAdminInvoices = async (
 |--------------------------------------------------------------------------
 */
 
-export const downloadInvoice = async (
-  invoiceId
-) => {
-  const response =
-    await axiosInstance.get(
-      `/invoices/${invoiceId}/download`,
-      {
-        responseType: "blob",
-      }
-    );
+
+export const downloadInvoice = async (invoiceId) => {
+  const response = await axiosInstance.get(
+    `/invoices/${invoiceId}/download`,
+    {
+      responseType: "blob",
+      cache: false,
+    }
+  );
 
   return response;
 };

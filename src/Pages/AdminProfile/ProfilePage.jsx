@@ -30,7 +30,7 @@ const ProfilePage = () => {
    */
 
   const [admin, setAdmin] = useState({
-    name: "Ananta Prasad",
+    name: "Bharat Fitness Den",
     role: "Super Admin",
     email: "admin@bharatfitnessden.com",
   });

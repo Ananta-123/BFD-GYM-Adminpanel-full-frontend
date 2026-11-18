@@ -67,24 +67,19 @@ const Navbar = ({ setMobileOpen }) => {
   }, []);
 
   // LOGOUT HANDLER
-const handleLogout = async () => {
 
+const handleLogout = async () => {
   try {
     await logoutAdmin();
-    localStorage.removeItem("token");
-    localStorage.removeItem(
-      "refreshToken"
+  } catch {
+    console.warn(
+      "Server logout could not be confirmed."
     );
-    localStorage.removeItem("user");
-    localStorage.removeItem(
-      "adminAuth"
-    );
-    navigate("/login");
-  } catch (error) {
-    console.log(error);
-    alert("Logout failed");
+  } finally {
+    window.location.replace("/login");
   }
 };
+
 
   return (
     <header

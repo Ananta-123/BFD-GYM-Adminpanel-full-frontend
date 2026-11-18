@@ -1,38 +1,48 @@
-import api from "./axios.js";
 
+import api, { clearApiCache } from "./axios.js";
+
+import {
+  saveSession,
+  removeSession,
+  getRefreshToken,
+} from "./session.js";
+
+// LOGIN
 export const loginAdmin = async (loginData) => {
-  const response = await api.post(
+  const { data } = await api.post(
     "/auth/login",
-    loginData
-  );
-
-  return response.data;
-};
-
-
-// LOGOUT
-export const logoutAdmin = async () => {
-
-  const refreshToken =
-    localStorage.getItem(
-      "refreshToken"
-    );
-
-  const response = await api.post(
-    "/auth/logout",
+    loginData,
     {
-      refreshToken,
+      cache: false,
     }
   );
 
-  return response.data;
+  await clearApiCache();
+
+  saveSession(data);
+
+  return data;
 };
 
-// export const registerAdmin = async (data) => {
-//   const response = await api.post(
-//     "/auth/register",
-//     data
-//   );
+// LOGOUT
+export const logoutAdmin = async () => {
+  const refreshToken = getRefreshToken();
 
-//   return response.data;
-// };
+  try {
+    if (refreshToken) {
+      await api.post(
+        "/auth/logout",
+        {
+          refreshToken,
+        },
+        {
+          cache: false,
+        }
+      );
+    }
+  } finally {
+    removeSession();
+
+    await clearApiCache();
+  }
+};
